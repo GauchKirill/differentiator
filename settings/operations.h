@@ -1,0 +1,10 @@
+// name_func/op_priority
+DEF_OP(  ADD,       0)
+DEF_OP(  SUB,       0)
+DEF_OP(  MUL,       1)
+DEF_OP(  DIV,       1)
+DEF_OP(  POW,       3)
+DEF_FUNC(LOG,       2)
+DEF_FUNC(SIN,       2)
+DEF_FUNC(COS,       2)
+DEF_FUNC(TAN,       2)

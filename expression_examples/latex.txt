@@ -1,0 +1,10 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools}
+\begin{document}
+\[
+x^{2.00}\cdot \frac{2.00}{x}+x^{x}\cdot \left(\frac{x}{x}+\ln\left(x\right)\right)+\cos\left(\cos\left(x^{3.00}\right)\right)\cdot -1.00\cdot \sin\left(x^{3.00}\right)\cdot x^{3.00}\cdot \frac{3.00}{x}
+\]
+\end{document}
