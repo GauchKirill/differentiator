@@ -4,9 +4,10 @@
 void modes(int argc, char** argv)
 {
 	unsigned num_modes = 0;
+
 	if (argc == 1)
 	{
-
+		
 	} else
 	if (argc == 2)
 	{
