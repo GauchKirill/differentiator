@@ -1,6 +1,6 @@
-//      flag         name          discription     function
-DEF_MOD("-d",   DIFFERENTIATOR,     "...",      mod_diff())
-DEF_MOD("-t",   TEILOR,             "...",      mod_tailor())
-DEF_MOD("-c",   CALCULATOR,         "...",      calculator())
-DEF_MOD("-h",   HELP,               "...",      help())
-DEF_MOD("-e",   EXIT,               "...",      return)
+//      flag         name          discription                                          function
+DEF_MOD("-d",   DIFFERENTIATOR,     "взятие производной любого порядка",    mod_diff(equation_file))
+DEF_MOD("-t",   TEILOR,             "разложение в ряд тейлора",             mod_tailor(equation_file))
+DEF_MOD("-c",   CALCULATOR,         "вычисление выражения",                 calculator(equation_file))
+DEF_MOD("-h",   HELP,               "вывод все возможные режимы",           help())
+DEF_MOD("-e",   EXIT,               "выход из программы",                   return)

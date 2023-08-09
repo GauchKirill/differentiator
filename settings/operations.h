@@ -1,4 +1,4 @@
-// name_func/op_priority
+// name_func/op_priority      !!! when adding a new function, be sure to describe the rules for taking the derivative !!!
 DEF_OP(  ADD,       0)
 DEF_OP(  SUB,       0)
 DEF_OP(  MUL,       1)

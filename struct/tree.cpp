@@ -65,7 +65,7 @@ node* create_node_var (const char* variable_name)
 		return nullptr;
 	}
 
-	var_name(new_node) = (char*) calloc(MAX_LENGHT_VAR, sizeof(char));
+	var_name(new_node) = (char*) calloc(LENGHT_VAR, sizeof(char));
 	if (!var_name(new_node))
 	{
 		printf("\n"
@@ -75,7 +75,7 @@ node* create_node_var (const char* variable_name)
 	}
 
 	new_node->type 	 	 	= VARIABLE;
-	strncpy(var_name(new_node), variable_name, MAX_LENGHT_VAR);
+	strncpy(var_name(new_node), variable_name, LENGHT_VAR);
 	left_node(new_node)		= nullptr;
 	right_node(new_node) 	= nullptr;
 
