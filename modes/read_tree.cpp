@@ -9,7 +9,7 @@ tree* read_tree()
 {
 	tree* tr = tree_ctor();
 	char* buf = read_text();
-	tr->root = GetGraph(buf);
+	tr->root = get_graph(buf);
 	return tr;
 }
 
@@ -59,24 +59,24 @@ void skip_space(const char** buf)
 
 size_t max_lenght_name = 5;
 
-node* GetGraph(const char* buf)
+node* get_graph(const char* buf)
 {
-	node* new_node = GetAddSub(&buf);
+	node* new_node = get_add_sub(&buf);
 	skip_space(&buf);
 	assert(*buf == '\0');
 	return new_node;
 }
 
-node* GetAddSub(const char** str)
+node* get_add_sub(const char** str)
 {
 	node* new_operator = nullptr;
 	node* left_operand = nullptr;
-	new_operator = left_operand = GetMulDiv(str);
+	new_operator = left_operand = get_mul_div(str);
 	while(**str == '+' || **str == '-')
 	{
 		char op = **str;
 		(*str)++;
-		node* right_operand = GetMulDiv(str);
+		node* right_operand = get_mul_div(str);
 		if (op == '+')
 			new_operator = create_node_op(OP_ADD, new_operator, right_operand);
 		else
@@ -86,16 +86,16 @@ node* GetAddSub(const char** str)
 	return new_operator;
 }
 
-node* GetMulDiv(const char** str)
+node* get_mul_div(const char** str)
 {
 	node* new_operator = nullptr;
 	node* left_operand = nullptr;
-	new_operator = left_operand = GetPow(str);
+	new_operator = left_operand = get_pow(str);
 	while(**str == '*' || **str == '/')
 	{
 		char op = **str;
 		(*str)++;
-		node* right_operand = GetPow(str);
+		node* right_operand = get_pow(str);
 		if (op == '*')
 			new_operator = create_node_op(OP_MUL, new_operator, right_operand);
 		else
@@ -105,22 +105,22 @@ node* GetMulDiv(const char** str)
 	return new_operator;
 }
 
-node* GetPow(const char** str)
+node* get_pow(const char** str)
 {
 	node* new_operator = nullptr;
 	node* left_operand = nullptr;
-	new_operator = left_operand = GetPrimExpr(str);
+	new_operator = left_operand = get_prim_expr(str);
 	while(**str == '^')
 	{
 		(*str)++;
-		node* right_operand = GetPrimExpr(str);
+		node* right_operand = get_prim_expr(str);
 		new_operator = create_node_op(OP_POW, new_operator, right_operand);
 		skip_space(str);
 	}
 	return new_operator;
 }
 
-node* GetPrimExpr(const char** str)
+node* get_prim_expr(const char** str)
 {
 
 	node* new_operator = nullptr;
@@ -135,12 +135,12 @@ node* GetPrimExpr(const char** str)
 	if (**str == '(')
 	{
 		(*str)++;
-		new_operator = GetAddSub(str);
+		new_operator = get_add_sub(str);
 		assert(**str == ')');
 		(*str)++;
 	}
 	else if ('a' <= **str && **str <= 'z')
-		new_operator = GetFunc(str);
+		new_operator = get_func(str);
 	else
 		new_operator = Getvar_num(str);
 	skip_space(str);
@@ -157,15 +157,15 @@ node* GetPrimExpr(const char** str)
 		new_func = create_node_func(OP_ ## op, new_func);	\
 	else
 
-node* GetFunc(const char** str)
+node* get_func(const char** str)
 {
 	node* new_func = nullptr;
 	char name_func[max_lenght_name] = {0};
-	GetNameFunc(name_func, str);
+	get_name_func(name_func, str);
 	skip_space(str);
 	if (**str == '(')
 	{
-		new_func = GetPrimExpr(str);
+		new_func = get_prim_expr(str);
 
 		calculate_func(sin, SIN)
 		calculate_func(cos, COS)
@@ -186,7 +186,7 @@ node* GetFunc(const char** str)
 
 #undef calculate_func
 
-void GetNameFunc(char* name_func, const char** str)
+void get_name_func(char* name_func, const char** str)
 {
 	int i = 0;
 	while('a' <= **str  && **str <= 'z' && i < max_lenght_name - 1)

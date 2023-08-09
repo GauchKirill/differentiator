@@ -2,6 +2,11 @@
 
 #include <string.h>
 
+void mod_diff(const char* equation_file)
+{
+	
+}
+
 node* node_copy(node* now_node)
 {
 	if (!now_node)
