@@ -108,6 +108,13 @@ bool is_simply_SUB(node* now_node)
 		node_rewrite(now_node, left_node(now_node));
 		return true;
 	}
+	else if (LNull(now_node))
+	{
+		node_dtor(left_node(now_node));
+		value_num(right_node(now_node)) *= -1;
+		node_rewrite(now_node, right_node(now_node));
+		return true;
+	}
 	return false;
 
 }
@@ -132,7 +139,7 @@ bool is_simply_MUL(node* now_node)
 	{
 		node_dtor(right_node(now_node));
 		node_dtor(left_node(now_node));
-		now_node->type = NUMBER;
+		type(now_node) = NUMBER;
 		value_num(now_node) = 0;
 		left_node(now_node) = nullptr;
 		right_node(now_node) = nullptr;
@@ -150,10 +157,11 @@ bool is_simply_DIV(node* now_node)
 		node_rewrite(now_node, left_node(now_node));
 		return true;
 	}
+	else if (RUnit(now_node))
+	{
+		node_dtor(right_node(now_node));
+		node_rewrite(now_node, left_node(now_node));
+		return true;
+	}
 	return false;
-}
-
-void node_rewrite(node* dest, node* src)
-{
-	
 }

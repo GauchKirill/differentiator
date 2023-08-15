@@ -20,6 +20,4 @@ bool is_simply_SUB(node* now_node);
 bool is_simply_MUL(node* now_node);
 bool is_simply_DIV(node* now_node);
 
-void node_rewrite(node* dest, node* src);
-
 #endif

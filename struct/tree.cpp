@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "../settings/const.h"
 
 tree* tree_ctor(void)
 {
@@ -118,10 +119,40 @@ node* node_copy(node* now_node)
 			break;
 		default:
 			printf("\n"
-					"node_copy: Don't find type with number %u\n", now_node->type);
+					"node_copy: Don't find type with number %u\n", type(now_node));
 			return nullptr;
 			break;
 	}
+}
+
+void node_rewrite(node* dest, node* src)
+{
+	type(dest) = type(src);
+
+	switch (type(src))
+	{
+	case OPERATION:
+		num_op(dest) = num_op(src);
+		priority_op(dest) = priority_op(src);
+		break;
+	case NUMBER:
+		value_num(dest) = value_num(src);
+		break;
+	case VARIABLE:
+		value_name(dest) = (char*) calloc(LENGHT_NAME_VAR, sizeof(char));
+		if (!value_name(dest))
+		{
+			printf("\n"
+					"node_rewrite: Has not memory for rewrite node \"%s\"\n", value_name(src));
+			return;
+		}
+		strncpy(value_name(dest), value_name(src), LENGHT_NAME_VAR);
+		free(value_name(src));
+		break;
+	}
+	left_node(dest) = left_node(src);
+	right_node(dest) = right_node(src);
+	free(src);
 }
 
 void tree_dtor(tree* tr)

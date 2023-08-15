@@ -14,7 +14,7 @@ enum modes
 
 void modes(int argc, char** argv);
 void help(void);
-void mod_diff(const char* equation_file);
+void mode_differ(const char* equation_file);
 void mod_tailor(const char* equation_file);
 void calculator(const char* equation_file);
 

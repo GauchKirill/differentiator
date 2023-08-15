@@ -5,7 +5,7 @@
 #include "../settings/const.h"
 #include "./simplification.h"
 
-void mod_diff(const char* equation_file)
+void mode_differ(const char* equation_file)
 {
 	tree* tree_expression = get_tree(equation_file);
 
@@ -53,7 +53,7 @@ tree* differ(tree* tr, const char* var)
 
 node* differ_node(node* now_node, const char* name_of_var)
 {
-	switch(now_node->type)
+	switch(type(now_node))
 	{
 		case OPERATION:
 			switch(num_op(now_node))

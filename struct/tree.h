@@ -74,8 +74,10 @@ node* 		create_node_num 	(double num);
 node* 		create_node_op  	(unsigned num_operation, node* left_ptr, node* right_ptr);
 node* 		create_node_func	(unsigned num_func, node* operand_node);
 node*		node_copy			(node* now_node);
+void 		node_rewrite		(node* dest, node* src);
 void  		tree_dtor			(tree* tr);
 void  		node_dtor			(node* now_node);
 unsigned	get_op_func_priority(unsigned num_operation);
+
 
 #endif
