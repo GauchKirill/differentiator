@@ -43,22 +43,22 @@ bool is_simply(node* now_node)
 
 bool LNull(node* now_node)
 {
-	return (left_node(now_node)->type  == NUMBER && var_num(left_node(now_node))  == 0);
+	return (left_node(now_node)->type  == NUMBER && value_num(left_node(now_node))  == 0);
 }
 
 bool RNull(node* now_node)
 {
-	return (right_node(now_node)->type == NUMBER && var_num(right_node(now_node)) == 0);
+	return (right_node(now_node)->type == NUMBER && value_num(right_node(now_node)) == 0);
 }
 
 bool LUnit(node* now_node)
 {
-	return (left_node(now_node)->type  == NUMBER && var_num(left_node(now_node))  == 1);
+	return (left_node(now_node)->type  == NUMBER && value_num(left_node(now_node))  == 1);
 } 
 
 bool RUnit(node* now_node)
 {
-	return (right_node(now_node)->type == NUMBER && var_num(right_node(now_node)) == 1);
+	return (right_node(now_node)->type == NUMBER && value_num(right_node(now_node)) == 1);
 }
 
 bool is_simply_ADD(node* now_node)
@@ -109,7 +109,7 @@ bool is_simply_MUL(node* now_node)
 		node_dtor(right_node(now_node));
 		node_dtor(left_node(now_node));
 		now_node->type = NUMBER;
-		var_num(now_node) = 0;
+		value_num(now_node) = 0;
 		left_node(now_node) = nullptr;
 		right_node(now_node) = nullptr;
 		return true;
@@ -139,10 +139,10 @@ void node_copy_dtor(node* get_node, node* put_node)
 		priority_op(get_node) 	= priority_op(put_node);
 		break;
 	case NUMBER:
-		var_num(get_node) = num_op(put_node);
+		value_num(get_node) = num_op(put_node);
 		break;
 	case VARIABLE:
-		var_name(get_node) = var_name(put_node);
+		value_name(get_node) = value_name(put_node);
 		break;
 	}
 	free(put_node);

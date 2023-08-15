@@ -48,7 +48,7 @@ node* create_node_num (double num)
 	}
 
 	new_node->type			= NUMBER;
-	var_num(new_node)		= num;
+	value_num(new_node)		= num;
 	left_node(new_node) 	= nullptr;
 	right_node(new_node) 	= nullptr;
 
@@ -65,8 +65,8 @@ node* create_node_var (const char* variable_name)
 		return nullptr;
 	}
 
-	var_name(new_node) = (char*) calloc(LENGHT_VAR, sizeof(char));
-	if (!var_name(new_node))
+	value_name(new_node) = (char*) calloc(LENGHT_VAR, sizeof(char));
+	if (!value_name(new_node))
 	{
 		printf("\n"
 				"Has not memory for variable name.\n");
@@ -75,7 +75,7 @@ node* create_node_var (const char* variable_name)
 	}
 
 	new_node->type 	 	 	= VARIABLE;
-	strncpy(var_name(new_node), variable_name, LENGHT_VAR);
+	strncpy(value_name(new_node), variable_name, LENGHT_VAR);
 	left_node(new_node)		= nullptr;
 	right_node(new_node) 	= nullptr;
 
@@ -111,10 +111,10 @@ node* node_copy(node* now_node)
 			return create_node_op(num_op(now_node), node_copy(left_node(now_node)), node_copy(right_node(now_node)));
 			break;
 		case NUMBER:
-			return create_node_num(var_num(now_node));
+			return create_node_num(value_num(now_node));
 			break;
 		case VARIABLE:
-			return create_node_var(var_name(now_node));
+			return create_node_var(value_name(now_node));
 			break;
 		default:
 			printf("\n"
@@ -137,8 +137,8 @@ void node_dtor(node* now_node)
 	{
 		node_dtor(left_node (now_node));
 		node_dtor(right_node(now_node));
-		if (type(now_node) == VARIABLE && var_name(now_node))
-			free(var_name(now_node));
+		if (type(now_node) == VARIABLE && value_name(now_node))
+			free(value_name(now_node));
 	}
 	return;
 }

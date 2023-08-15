@@ -19,7 +19,7 @@ bool calculate_node(node* now_node)
 			left_node(now_node)->type == NUMBER)									\
 		{																			\
 			now_node->type = NUMBER;												\
-			var_num(now_node) = var_num(left_node(now_node)) op var_num(right_node(now_node));	\
+			value_num(now_node) = value_num(left_node(now_node)) op value_num(right_node(now_node));	\
 			node_dtor(left_node(now_node));											\
 			node_dtor(right_node(now_node));											\
 			left_node(now_node)  = nullptr;											\
@@ -33,7 +33,7 @@ bool calculate_node(node* now_node)
 		if (right_node(now_node)->type == NUMBER)			\
 		{													\
 			now_node->type = NUMBER;						\
-			var_num(now_node) = op(var_num(right_node(now_node)));	\
+			value_num(now_node) = op(value_num(right_node(now_node)));	\
 			node_dtor(right_node(now_node));					\
 			right_node(now_node) = nullptr;					\
 			return true;									\
@@ -57,7 +57,7 @@ bool is_calculate(node* now_node)
 				left_node(now_node)->type == NUMBER)
 			{
 				now_node->type = NUMBER;
-				var_num(now_node) = pow(var_num(left_node(now_node)), var_num(right_node(now_node)));	
+				value_num(now_node) = pow(value_num(left_node(now_node)), value_num(right_node(now_node)));	
 				node_dtor(left_node(now_node));												
 				node_dtor(right_node(now_node));												
 				left_node(now_node)  = nullptr;												

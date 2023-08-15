@@ -110,10 +110,10 @@ void latex_dump_op(node* now_node, FILE* latex_file, int prior_before_op)
 
 void latex_dump_var_num(node* now_node, FILE* latex_file, int prior_before_op)
 {
-	fprintf(latex_file, "%.2lf", var_num(now_node));
+	fprintf(latex_file, "%.2lf", value_num(now_node));
 }
 
 void latex_dump_var(node* now_node, FILE* latex_file, int prior_before_op)
 {
-	fprintf(latex_file,"%s", var_name(now_node));
+	fprintf(latex_file,"%s", value_name(now_node));
 }

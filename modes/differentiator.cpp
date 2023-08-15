@@ -16,7 +16,7 @@ tree* differ(tree* tr, const char* var)
 	return diff_tr;
 }
 
-#define differ_node(type)	diff_ ## type(now_node, name_of_var)
+#define differ_node(type)	differ_ ## type(now_node, name_of_var)
 #define differ_op(name)									\
 	case OP_ ## name:									\
 		return diff_ ## name(now_node, name_of_var);	\
@@ -160,7 +160,7 @@ node* diff_var_num(node* now_node, const char* name_of_var)
 node* diff_var(node* now_node, const char* name_of_var)
 {
 	const int max_lenght_name = 10;
-	if (strncmp(name_of_var, var_name(now_node), max_lenght_name) == 0)
+	if (strncmp(name_of_var, value_name(now_node), max_lenght_name) == 0)
 		return create_node_num(1);
 	else
 		return create_node_num(0);

@@ -88,7 +88,7 @@ void graph_dump_var_num(node* now_node, int num_node, FILE* dump_file)
 	fprintf (dump_file,
 		"V%d[shape=record, label="
 		"\"{ ptr: %p | { type: NUM | data: %lf } | { left node: %p | right node: %p } }\"];\n",
-	    num_node, now_node, var_num(now_node), left_node(now_node), right_node(now_node));
+	    num_node, now_node, value_num(now_node), left_node(now_node), right_node(now_node));
 }
 
 #define print_op(name, op)							\
@@ -130,7 +130,7 @@ void graph_dump_var(node* now_node, int num_node, FILE* dump_file)
 	fprintf (dump_file,
 		"V%d[shape=record, label="
 		"\"{ ptr: %p | { type: VAR | name: %s } | {	 left node: %p | right node: %p } }\"];\n",
-		num_node, now_node, var_name(now_node), left_node(now_node), right_node(now_node));
+		num_node, now_node, value_name(now_node), left_node(now_node), right_node(now_node));
 }
 
 void graph_dump_wrong_type(node* now_node, int num_node, FILE* dump_file)
@@ -138,5 +138,5 @@ void graph_dump_wrong_type(node* now_node, int num_node, FILE* dump_file)
 	fprintf (dump_file,
 		"V%d[shape=record, label="
 		"\"{ ptr: %p | { type: WRONG | data: %lf } | { left node: %p | right node: %p } }\"];\n",
-	    num_node, now_node, var_num(now_node), left_node(now_node), right_node(now_node));
+	    num_node, now_node, value_num(now_node), left_node(now_node), right_node(now_node));
 }

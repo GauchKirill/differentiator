@@ -64,8 +64,8 @@ typedef struct
 #define right_node(Node)	Node->right 
 #define num_op(Node)		Node->value.op_info.num_op
 #define priority_op(Node)	Node->value.op_info.priority_op
-#define var_num(Node)		Node->value.num
-#define var_name(Node)		Node->value.var_name
+#define value_num(Node)		Node->value.num
+#define value_name(Node)	Node->value.var_name
 #define operand_ptr(Node)	Node->right
 
 tree* 		tree_ctor			(void);
