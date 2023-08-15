@@ -1,6 +1,8 @@
 #include "./differentiator.h"
+#include <string.h>
+#include <stdio.h>
 #include "./read_tree.h"
-#include <stdlib.h>
+#include "../settings/const.h"
 
 void mod_diff(const char* equation_file)
 {
@@ -16,6 +18,16 @@ tree* differ(tree* tr, const char* var)
 	return differ_tr;
 }
 
+#define DEF_OP(name, priority, operator)				\
+	case OP_ ## name:									\
+		return differ_ ## name(now_node, name_of_var);	\
+		break;
+
+#define DEF_FUNC(name, priority, operator)				\
+	case OP_ name:										\
+		return deffer_ ## name(now_node, name_of_var)	\
+		break;
+
 node* differ_node(node* now_node, const char* name_of_var)
 {
 	switch(now_node->type)
@@ -23,135 +35,132 @@ node* differ_node(node* now_node, const char* name_of_var)
 		case OPERATION:
 			switch(num_op(now_node))
 			{
-				differ_op(ADD)
-				differ_op(SUB)
-				differ_op(MUL)
-				differ_op(DIV)
-				differ_op(POW)
-				differ_op(SIN)
-				differ_op(COS)
-				differ_op(TG)
-				differ_op(LOG)
+				#include "../settings/operations.h"
 			default:
+				printf("\n"
+						"deffer_node: Don't find operations with number %u\n", num_op(now_node));
 				return nullptr;
 				break;
 			}
 			break;
 		case NUMBER:
-			return differ_node(num);
+			return differ_num(now_node);
 			break;
 		case VARIABLE:
-			return differ_node(var);
+			return differ_var(now_node, name_of_var);
 			break;
 		default:
-			printf("Wrong type. Cann't differentiate\n");
+			printf("\n"
+					"differ_node: Wrong type %u. Cann't differentiate\n", now_node->type);
 			return nullptr;
 			break;
 	}
 }
 
+#undef DEF_OP
+#undef DEF_FUNC
+
+//-------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------     Add new func     -----------------------------------------------------
 
 node* differ_ADD(node* now_node, const char* name_of_var)
 {
-	node* diffed_node = create_node_op (OP_ADD,
-										differ_node(left_node (now_node), name_of_var),
-										differ_node(right_node(now_node), name_of_var));
-
-	return diffed_node;
+	return create_node_op (OP_ADD,
+							differ_node(left_node (now_node), name_of_var),
+							differ_node(right_node(now_node), name_of_var));
 }
 
 node* differ_SUB(node* now_node, const char* name_of_var)
 {
-	node* diffed_node = create_node_op (OP_SUB,
-										differ_node(left_node (now_node), name_of_var),
-										differ_node(right_node(now_node), name_of_var));
-	
-	return diffed_node;
+	return create_node_op (OP_SUB,
+							differ_node(left_node (now_node), name_of_var),
+							differ_node(right_node(now_node), name_of_var));
 }
 
 node* differ_MUL(node* now_node, const char* name_of_var)
 {	
-	node* left_diffed_node  = create_node_op(OP_MUL, differ_node(left_node (now_node), name_of_var),
+	node* left_differentiated_node  = create_node_op(OP_MUL, differ_node(left_node (now_node), name_of_var),
 															 node_copy(right_node(now_node)));
-	node* right_diffed_node = create_node_op(OP_MUL, node_copy(left_node (now_node)),
-															 differ_node(right_node(now_node), name_of_var));
-	node* diffed_node 		= create_node_op(OP_ADD, left_diffed_node, right_diffed_node);
 
-	return diffed_node;
+	node* right_differentiated_node = create_node_op(OP_MUL, node_copy(left_node (now_node)),
+															 differ_node(right_node(now_node), name_of_var));
+
+	return create_node_op(OP_ADD, left_differentiated_node, right_differentiated_node);
 }
 
 node* differ_DIV(node* now_node, const char* name_of_var)
 {
-	node* mul_l_node 	= create_node_op (OP_MUL,	differ_node(left_node (now_node), name_of_var),
-															node_copy(right_node(now_node)));
-	node* mul_r_node 	= create_node_op (OP_MUL, 	node_copy(left_node (now_node)),
-															differ_node(right_node(now_node), name_of_var));
-	node* sub_node 	 	= create_node_op (OP_SUB, mul_l_node, mul_r_node);
-	node* const_2_node	= create_node_var_num(2);
-	node* pow_node 		= create_node_op (OP_POW, right_node(now_node), const_2_node);
-	node* diffed_node 	= create_node_op (OP_DIV, sub_node, pow_node);
+	node* mul_left_nodes 	= create_node_op (OP_MUL,	differ_node(left_node (now_node), name_of_var),
+														node_copy(right_node(now_node)));
 
-	return diffed_node;
+	node* mul_right_nodes 	= create_node_op (OP_MUL, 	node_copy(left_node (now_node)),
+														differ_node(right_node(now_node), name_of_var));
+
+	node* subb_node 	= create_node_op (OP_SUB, mul_left_nodes, mul_right_nodes);
+	node* const_node	= create_node_num(2);
+	node* pow_node		= create_node_op (OP_POW, right_node(now_node), const_node);
+
+	return create_node_op (OP_DIV, subb_node, pow_node);
 }
 
 node* differ_POW(node* now_node, const char* name_of_var)
 {
-	node* div_node		 = create_node_op	(OP_DIV, right_node(now_node), left_node(now_node));
-	node* log_node 		 = create_node_func (OP_LOG, node_copy(left_node(now_node)));
-	node* left_add_node  = create_node_op	(OP_MUL, div_node, differ_node(left_node (now_node), name_of_var));
-	node* right_add_node = create_node_op	(OP_MUL, log_node, differ_node(right_node(now_node), name_of_var));
-	node* right_mul_node = create_node_op	(OP_ADD, left_add_node, right_add_node); 
-	node* diffed_node 	 = create_node_op	(OP_MUL, node_copy(now_node), right_mul_node);
-
-	return diffed_node;
-}
-
-node* differ_SIN(node* now_node, const char* name_of_var)
-{
-	node* cos_node 		= create_node_func(OP_COS, node_copy(right_node(now_node)));
-	node* diffed_node 	= create_node_op  (OP_MUL, cos_node, differ_node(right_node(now_node), name_of_var));
-	return diffed_node;
-}
-
-node* differ_COS(node* now_node, const char* name_of_var)
-{
-	node* sin_node 		= create_node_func	(OP_SIN, node_copy(right_node(now_node)));
-	node* mul_node 		= create_node_op  	(OP_MUL, sin_node, differ_node(right_node(now_node), name_of_var));
-	node* const_node 	= create_node_num	(-1);
-	node* diffed_node 	= create_node_op	(OP_MUL, const_node, mul_node);
-	return diffed_node;
+	node* div_node				= create_node_op	(OP_DIV, right_node(now_node), left_node(now_node));
+	node* log_node				= create_node_func	(OP_LOG, node_copy(left_node(now_node)));
+	node* left_add_node			= create_node_op	(OP_MUL, div_node, differ_node(left_node (now_node), name_of_var));
+	node* right_add_node		= create_node_op	(OP_MUL, log_node, differ_node(right_node(now_node), name_of_var));
+	node* right_mul_node 		= create_node_op	(OP_ADD, left_add_node, right_add_node); 
+	return						create_node_op		(OP_MUL, node_copy(now_node), right_mul_node);
 }
 
 node* differ_LOG(node* now_node, const char* name_of_var)
 {
-	node* const_node 	= create_node_num(1); 
-	node* left_mul_node	= create_node_op(OP_DIV, const_node, node_copy(right_node(now_node)));
-	node* diffed_node 	= create_node_op(OP_MUL, left_mul_node, differ_node(right_node(now_node), name_of_var));
+	node* const_node 	= create_node_num	(1); 
+	node* left_mul_node	= create_node_op	(OP_DIV, const_node, node_copy(right_node(now_node)));
+	return				create_node_op		(OP_MUL, left_mul_node, differ_node(operand_ptr(now_node), name_of_var));
+}
 
-	return diffed_node;
+node* differ_SIN(node* now_node, const char* name_of_var)
+{
+	node* cos_node	= create_node_func	(OP_COS, node_copy(operand_ptr(now_node)));
+	return 			create_node_op  	(OP_MUL, cos_node, differ_node(operand_ptr(now_node), name_of_var));
+}
+
+node* differ_COS(node* now_node, const char* name_of_var)
+{
+	node* sin_node 		= create_node_func	(OP_SIN, node_copy(operand_ptr(now_node)));
+	node* mul_node 		= create_node_op  	(OP_MUL, sin_node, differ_node(operand_ptr(now_node), name_of_var));
+	node* const_node	= create_node_num	(-1);
+	return				create_node_op		(OP_MUL, const_node, mul_node);
 }
 
 node* differ_TAN(node* now_node, const char* name_of_var)
 {
-	node* const_node 	= create_node_num(1);
-	node* const_2_node	= create_node_num(2);
-	node* cos_node 		= create_node_func(OP_COS, node_copy(right_node(now_node)));
-	node* pow_node 		= create_node_op(OP_POW, cos_node, const_2_node);
-	node* mul_l_node 	= create_node_op(OP_DIV, const_node, pow_node);
-	node* diffed_node 	= create_node_op(OP_MUL, mul_l_node, differ_node(right_node(now_node), name_of_var));
-
-	return diffed_node;
+	node* const_node 	= create_node_num	(1);
+	node* const_2_node	= create_node_num	(2);
+	node* cos_node 		= create_node_func	(OP_COS, node_copy(operand_ptr(now_node)));
+	node* pow_node 		= create_node_op	(OP_POW, cos_node, const_2_node);
+	node* mul_l_node 	= create_node_op	(OP_DIV, const_node, pow_node);
+	return				create_node_op		(OP_MUL, mul_l_node, differ_node(operand_ptr(now_node), name_of_var));
 }
 
-node* differ_var_num(node* now_node, const char* name_of_var)
+node* deffer_SQRT(node* now_node, const char* name_of_var)
+{
+	node* const_node	= create_node_num	(0.5);
+	node* div_node		= create_node_op	(OP_DIV, const_node, node_copy(now_node));
+	return 				create_node_op		(OP_MUL, div_node, differ_node(operand_ptr(now_node), name_of_var));
+}
+
+//-------------------------------------------------------------------------------------------------------------------------
+
+node* differ_num(node* now_node)
 {
 	return create_node_num(0);
 }
 
 node* differ_var(node* now_node, const char* name_of_var)
 {
-	const int max_lenght_name = 10;
-	if (strncmp(name_of_var, value_name(now_node), max_lenght_name) == 0)
+	if (strncmp(name_of_var, value_name(now_node), LENGHT_NAME_VAR) == 0)
 		return create_node_num(1);
 	else
 		return create_node_num(0);
