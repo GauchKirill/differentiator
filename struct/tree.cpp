@@ -82,7 +82,7 @@ node* create_node_var (const char* variable_name)
 	return new_node;
 }
 
-node* create_node_func (int num_func, node* operand_node)
+node* create_node_func (unsigned num_func, node* operand_node)
 {
 	node* func_node = (node*) calloc(1, sizeof(node));
 	if(!func_node)
@@ -98,6 +98,30 @@ node* create_node_func (int num_func, node* operand_node)
 	operand_ptr(func_node)	= operand_node;
 
 	return func_node;
+}
+
+node* node_copy(node* now_node)
+{
+	if (!now_node)
+		return nullptr;
+ 
+	switch(now_node->type)
+	{
+		case OPERATION:
+			return create_node_op(num_op(now_node), node_copy(left_node(now_node)), node_copy(right_node(now_node)));
+			break;
+		case NUMBER:
+			return create_node_num(var_num(now_node));
+			break;
+		case VARIABLE:
+			return create_node_var(var_name(now_node));
+			break;
+		default:
+			printf("\n"
+					"node_copy: Don't find type with number %u\n", now_node->type);
+			return nullptr;
+			break;
+	}
 }
 
 void tree_dtor(tree* tr)

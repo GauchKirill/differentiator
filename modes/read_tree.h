@@ -3,7 +3,7 @@
 
 #include "../struct/tree.h"
 
-tree* read_tree(const char* equation_file);
+tree* get_tree(const char* equation_file);
 char* read_text(const char* equation_file);
 void  skip_space(const char** buf);
 

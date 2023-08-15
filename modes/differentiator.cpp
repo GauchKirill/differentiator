@@ -1,37 +1,10 @@
 #include "./differentiator.h"
-
-#include <string.h>
+#include "./read_tree.h"
+#include <stdlib.h>
 
 void mod_diff(const char* equation_file)
 {
-	
-}
-
-node* node_copy(node* now_node)
-{
-	if (!now_node)
-		return nullptr;
-
-	node* copy_now_node = (node*) calloc(1, sizeof(node));
-	copy_now_node->type = now_node->type;
-	switch(now_node->type)
-	{
-		case OPERATION:
-			num_op(copy_now_node) = num_op(now_node);
-			priority_op(copy_now_node) = priority_op(now_node);
-			break;
-		case NUMBER:
-			var_num(copy_now_node) = var_num(now_node);
-			break;
-		case VARIABLE:
-			var_name(copy_now_node) = var_name(now_node);
-			break;
-	}
-
-	left_node (copy_now_node) = node_copy(left_node (now_node));
-	right_node(copy_now_node) = node_copy(right_node(now_node));
-
-	return copy_now_node;
+	tree* tree_expression = get_tree(equation_file);
 }
 
 tree* differ(tree* tr, const char* var)
@@ -160,17 +133,17 @@ node* diff_COS(node* now_node, const char* name_of_var)
 
 node* diff_LOG(node* now_node, const char* name_of_var)
 {
-	node* const_node 	= create_node_var_num(1); 
+	node* const_node 	= create_node_num(1); 
 	node* left_mul_node	= create_node_op(OP_DIV, const_node, node_copy(right_node(now_node)));
 	node* diffed_node 	= create_node_op(OP_MUL, left_mul_node, diff_node(right_node(now_node), name_of_var));
 
 	return diffed_node;
 }
 
-node* diff_TG(node* now_node, const char* name_of_var)
+node* diff_TAN(node* now_node, const char* name_of_var)
 {
-	node* const_node 	= create_node_var_num(1);
-	node* const_2_node	= create_node_var_num(2);
+	node* const_node 	= create_node_num(1);
+	node* const_2_node	= create_node_num(2);
 	node* cos_node 		= create_node_func(OP_COS, node_copy(right_node(now_node)));
 	node* pow_node 		= create_node_op(OP_POW, cos_node, const_2_node);
 	node* mul_l_node 	= create_node_op(OP_DIV, const_node, pow_node);
@@ -181,15 +154,15 @@ node* diff_TG(node* now_node, const char* name_of_var)
 
 node* diff_var_num(node* now_node, const char* name_of_var)
 {
-	return create_node_var_num(0);
+	return create_node_num(0);
 }
 
 node* diff_var(node* now_node, const char* name_of_var)
 {
 	const int max_lenght_name = 10;
 	if (strncmp(name_of_var, var_name(now_node), max_lenght_name) == 0)
-		return create_node_var_num(1);
+		return create_node_num(1);
 	else
-		return create_node_var_num(0);
+		return create_node_num(0);
 }
 

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include "../settings/const.h"
 
-tree* read_tree(const char* equation_file)
+tree* get_tree(const char* equation_file)
 {
 	tree* tr = tree_ctor();
 	char* buf = read_text(equation_file);
