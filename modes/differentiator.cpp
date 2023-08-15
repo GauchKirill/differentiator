@@ -3,10 +3,33 @@
 #include <stdio.h>
 #include "./read_tree.h"
 #include "../settings/const.h"
+#include "./simplification.h"
 
 void mod_diff(const char* equation_file)
 {
 	tree* tree_expression = get_tree(equation_file);
+
+	unsigned derivative_num = 0;
+	do
+	{
+		printf("\n"
+			"Введите номер производной, которую следует взять:\n");
+	} while ((scanf("%u", derivative_num) != 1) && scanf("%*s"));
+
+	printf("\n"
+			"Введите название переменной, по которой взять производную:\n");
+
+	char name_of_var[LENGHT_NAME_VAR] = "";
+	fgets(name_of_var, LENGHT_NAME_VAR, stdin);
+
+	tree* new_tree_expression = tree_expression;
+	while (derivative_num--)
+	{
+		tree* delete_tree = new_tree_expression;
+		new_tree_expression = differ(new_tree_expression, name_of_var);
+		simply_tree(new_tree_expression);
+		tree_dtor(delete_tree);
+	}
 }
 
 tree* differ(tree* tr, const char* var)
