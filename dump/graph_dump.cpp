@@ -1,56 +1,61 @@
-#include "graph_dump.h"
+#include "../dump/graph_dump.h"
+#include "../settings/const.h"
+#include <stdlib.h>
+#include <string.h>
 
-const char* name_dump_file = "tree.dot";
 const unsigned max_lenght_cmd = 100;
 
 void graph_dump(tree* tr)
 {
 	if (!tr) return;
 
-	FILE* dump_file = fopen(name_dump_file, "w");
+	char dot_file[LENGTH_NAME_FILE+5] = ""; // +5 на расширение
+	strncpy(dot_file, name_dump_file, LENGTH_NAME_FILE);
+	strncat(dot_file, ".dot", 5);
+
+	FILE* dump_file = fopen(dot_file, "w");
 	if (!dump_file)
 	{
-		printf("Cann't open file %s\n", name_dump_file);
+		printf("Cann't open file %s\n", dot_file);
 		return;
 	}
 
 	fprintf (dump_file,
 		"digraph G{\n"
-		"	rankdir=TB;\n"
-		"	node[shape=\"rectangle\",fontsize=14];\n"
-		"	edge[arrowhead=\"open\"];\n");
+			"rankdir=TB;\n"
+			"node[shape=\"rectangle\",fontsize=14];\n"
+			"edge[arrowhead=\"open\"];\n");
 
-	int num_node = 0;
+	unsigned num_node = 0;
 	graph_dump_node(tr->root, &num_node, dump_file);
 
 	fprintf (dump_file,
 		"}\n");
 
 	fclose(dump_file);
-	CtorDumpFile_dot();	
+	ctor_tree_png_file();
 }
 
-void CtorDumpFile_dot()
+void ctor_tree_png_file()
 {
-	printf("1\n");
-	char cmd[max_lenght_cmd] = {0};
-	sprintf(cmd, "dot -Tpng %s -o tree.png", name_dump_file);
+	char cmd[LENGHT_CMD] = "";
+	sprintf(cmd, "dot -Tpng %s.dot - o %s.png", name_dump_file, name_dump_file);
 	system (cmd);
 }
 
-#define edge(color)														\
+#define draw_edge(color)												\
 	fprintf (dump_file,													\
-		"	V%d->V%d[color=\"%s\"];\n", num_now_node, *num_node, color)
+		"	V%d->V%d[color=\"%s\"];\n", num_now_node, *num_node, color);
 
 #define dump(type) graph_dump_ ## type(now_node, *num_node, dump_file)
 
-void graph_dump_node(node* now_node, int* num_node, FILE* dump_file)
+void graph_dump_node(node* now_node, unsigned* num_node, FILE* dump_file)
 {
 	if (!now_node)
 		return;
-	int num_now_node = *num_node;
+	unsigned num_now_node = *num_node;
 
-	switch(now_node->type)
+	switch(type(now_node))
 	{
 		case OPERATION:
 			dump(op);
@@ -70,30 +75,35 @@ void graph_dump_node(node* now_node, int* num_node, FILE* dump_file)
 
 	if (left_node(now_node))
 	{
-		edge("red");
+		draw_edge("red")
 		graph_dump_node(left_node(now_node), num_node, dump_file);
 	}
 
 	if (right_node(now_node))
 	{
-		edge("blue");
+		draw_edge("blue")
 		graph_dump_node(right_node(now_node), num_node, dump_file);
 	}
 }
 #undef dump
-#undef edge
+#undef draw_edge
 
-void graph_dump_var_num(node* now_node, int num_node, FILE* dump_file)
+void graph_dump_var_num(node* now_node, unsigned num_node, FILE* dump_file)
 {
 	fprintf (dump_file,
 		"V%d[shape=record, label="
 		"\"{ ptr: %p | { type: NUM | data: %lf } | { left node: %p | right node: %p } }\"];\n",
-	    num_node, now_node, value_num(now_node), left_node(now_node), right_node(now_node));
+		num_node, now_node, value_num(now_node), left_node(now_node), right_node(now_node));
 }
 
-#define print_op(name, op)							\
-	case OP_ ## name:								\
-		fprintf(dump_file, "{ type: OP | %s }", op);\
+#define DEF_OP(name, priority, operator)					\
+	case OP_ ## name:										\
+		fprintf(dump_file, "{ type: OP | %s }", operator);	\
+		break;
+
+#define DEF_FUNC(name, priority, operator)					\
+	case OP_ ## name:										\
+		fprintf(dump_file, "{ type: FUNC | %s }", operator);\
 		break; 
 
 void graph_dump_op(node* now_node, int num_node, FILE* dump_file)
@@ -105,17 +115,9 @@ void graph_dump_op(node* now_node, int num_node, FILE* dump_file)
 
 	switch(num_op(now_node))
 	{
-		print_op(ADD, "+")
-		print_op(SUB, "-")
-		print_op(MUL, "*")
-		print_op(DIV, "/")
-		print_op(POW, "^")
-		print_op(SIN, "sin")
-		print_op(COS, "cos")
-		print_op(LOG, "log")
-		print_op(TAN,  "tg")
+		#include "../settings/operations.h"
 		default:
-			printf("Didn't find operation %d\n", num_op(now_node));
+			fprintf(dump_file, "{ type: none | none }");
 	}
 
 	fprintf (dump_file,
@@ -123,9 +125,10 @@ void graph_dump_op(node* now_node, int num_node, FILE* dump_file)
 	    left_node(now_node), right_node(now_node));
 }
 
-#undef print_op
+#undef DEF_OP
+#undef DEF_FUNC
 
-void graph_dump_var(node* now_node, int num_node, FILE* dump_file)
+void graph_dump_var(node* now_node, unsigned num_node, FILE* dump_file)
 {
 	fprintf (dump_file,
 		"V%d[shape=record, label="
@@ -133,7 +136,7 @@ void graph_dump_var(node* now_node, int num_node, FILE* dump_file)
 		num_node, now_node, value_name(now_node), left_node(now_node), right_node(now_node));
 }
 
-void graph_dump_wrong_type(node* now_node, int num_node, FILE* dump_file)
+void graph_dump_wrong_type(node* now_node, unsigned num_node, FILE* dump_file)
 {
 	fprintf (dump_file,
 		"V%d[shape=record, label="
