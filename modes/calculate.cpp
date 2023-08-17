@@ -14,43 +14,26 @@ bool calculate_node(node* now_node)
 	return did_subtrees_calculate;
 }
 
-#define DEF_OP(name, priority, operator)																	\
-	case OP_ ## name:																						\
-		if (type(right_node(now_node)) == NUMBER &&															\
-			type(left_node(now_node))  == NUMBER)															\
-		{																									\
-			type(now_node) = NUMBER;																		\
-			value_num(now_node) = value_num(left_node(now_node)) operator value_num(right_node(now_node));	\
-		}																									\
+#define DEF_OP(name, priority, operator)																		\
+	case OP_ ## name:																							\
+		if (type(right_node(now_node)) == NUMBER &&																\
+			type(left_node(now_node))  == NUMBER)																\
+		{																										\
+			type(now_node) = NUMBER;																			\
+			if (num_op(now_node) == OP_POW)																		\
+				value_num(now_node) = pow(value_num(left_node(now_node)), value_num(right_node(now_node)));		\
+			else																								\
+				value_num(now_node) = value_num(left_node(now_node)) operator value_num(right_node(now_node));	\
+		}																										\
 		break;
 
-#define DEF_FUNC(name, priority, operator)
-
-#define calculate_simple_op(name, op)												\
-	case OP_ ## name:																\
-		if (right_node(now_node)->type == NUMBER &&									\
-			left_node(now_node)->type == NUMBER)									\
-		{																			\
-			now_node->type = NUMBER;												\
-			value_num(now_node) = value_num(left_node(now_node)) op value_num(right_node(now_node));	\
-			node_dtor(left_node(now_node));											\
-			node_dtor(right_node(now_node));											\
-			left_node(now_node)  = nullptr;											\
-			right_node(now_node) = nullptr;											\
-			return true;															\
-		}																			\
-		break;
-
-#define calculate_func(name, op)							\
-	case OP_ ## name:										\
-		if (right_node(now_node)->type == NUMBER)			\
-		{													\
-			now_node->type = NUMBER;						\
-			value_num(now_node) = op(value_num(right_node(now_node)));	\
-			node_dtor(right_node(now_node));					\
-			right_node(now_node) = nullptr;					\
-			return true;									\
-		}													\
+#define DEF_FUNC(name, priority, operator)										\
+	case OP_ ## name:															\
+		if (type(operand_ptr(now_node)) == NUMBER)								\
+		{																		\
+			type(now_node) = NUMBER;											\
+			value_num(now_node) = operator(value_num(operand_ptr(now_node)));	\
+		}																		\
 		break;
 
 bool is_calculate(node* now_node)
@@ -60,7 +43,6 @@ bool is_calculate(node* now_node)
 	switch(num_op(now_node))
 	{
 		#include "../settings/operations.h"
-
 	}
 
 	if (type(now_node) == NUMBER)
@@ -69,10 +51,10 @@ bool is_calculate(node* now_node)
 		node_dtor(right_node(now_node));
 		left_node(now_node) = nullptr;
 		right_node(now_node) = nullptr;
+		return true;
 	}
-	
 	return false;
 }
 
-#undef calculate_func
-#undef calculate_simple_op
+#undef DEF_OP
+#undef DEF_FUNC
