@@ -88,7 +88,7 @@ void graph_dump_node(node* now_node, unsigned* num_node, FILE* dump_file)
 #undef dump
 #undef draw_edge
 
-void graph_dump_var_num(node* now_node, unsigned num_node, FILE* dump_file)
+void graph_dump_num(node* now_node, unsigned num_node, FILE* dump_file)
 {
 	fprintf (dump_file,
 		"V%d[shape=record, label="
@@ -106,7 +106,7 @@ void graph_dump_var_num(node* now_node, unsigned num_node, FILE* dump_file)
 		fprintf(dump_file, "{ type: FUNC | %s }", operator);\
 		break; 
 
-void graph_dump_op(node* now_node, int num_node, FILE* dump_file)
+void graph_dump_op(node* now_node, unsigned num_node, FILE* dump_file)
 {
 	fprintf (dump_file,
 		"V%d[shape=record, label="
