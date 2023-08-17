@@ -14,6 +14,6 @@ node* get_pow		    (const char** buf);
 node* get_prim_expr     (const char** buf);
 node* get_func		    (const char** buf);
 void  get_name_func_var	(char* name_func, const char** buf);
-node* get_num           (const char** buf)
+node* get_num           (const char** buf);
 
 #endif
